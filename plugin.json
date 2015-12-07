@@ -1,0 +1,61 @@
+{
+  "id": "nodebb-plugin-photoset",
+  "url": "https://github.com/amokrushin/nodebb-plugin-photoset",
+  "library": "./library.js",
+  "hooks": [
+    {
+      "hook": "static:app.load",
+      "method": "init"
+    },
+    {
+      "hook": "filter:admin.header.build",
+      "method": "addAdminNavigation"
+    },
+    {
+      "hook": "filter:uploadImage",
+      "method": "upload",
+      "priority": 6
+    },
+    {
+      "hook": "filter:parse.post",
+      "method": "parse",
+      "callbacked": true
+    },
+    {
+      "hook": "filter:post.save",
+      "method": "postSave",
+      "callbacked": true
+    },
+    {
+      "hook": "filter:post.edit",
+      "method": "postEdit",
+      "callbacked": true
+    },
+    {
+      "hook": "filter:topic.build",
+      "method": "embedPhotoswipe"
+    }
+  ],
+  "staticDirs": {
+    "static": "./static",
+    "images": "static/images"
+  },
+  "less": [
+    "static/style.less"
+  ],
+  "css": [
+    "static/vendor/justifiedGallery.min.css",
+    "static/vendor/photoswipe.css",
+    "static/vendor/photoswipe-default-skin.css"
+  ],
+  "scripts": [
+    "static/lib/admin.js",
+    "static/vendor/jquery.justifiedGallery.min.js",
+    "static/vendor/photoswipe.js",
+    "static/vendor/photoswipe-ui-default.js",
+    "shared/image-filename.js",
+    "static/lib/photoswipe.js",
+    "static/lib/photoset.js"
+  ],
+  "templates": "static/templates"
+}
