@@ -57,18 +57,15 @@ SocketPlugins.photoset.gcsConnect = function( socket, data, callback ) {
     var config = {
         projectId: data.projectId,
         credentials: {
-            clientEmail: data.clientEmail,
-            privateKey: data.privateKey
+            client_email: data.clientEmail,
+            private_key: data.privateKey
         }
     };
 
     var gcs = gcloud.storage( config );
 
     gcs.getBuckets( function( err, res ) {
-        if( err )
-        {
-            return callback( null, {success: false, message: err.message} );
-        }
+        if( err ) return callback( err );
 
         var buckets = res.map( function( bucket ) {
             return {name: bucket.metadata.name};
@@ -77,7 +74,6 @@ SocketPlugins.photoset.gcsConnect = function( socket, data, callback ) {
         meta.settings.setOne( 'photoset', 'buckets', JSON.stringify( buckets ) );
 
         callback( null, {
-            success: true,
             buckets: buckets
         } );
     } );
