@@ -8,20 +8,15 @@
             photosets = [];
 
         photoswipe.post = function( $post ) {
-            var postId = $post.attr( 'data-pid' );
-            var $photoswipeContainers = $post.find( '.photoset-grid' );
-            //$post.find( '.photoset-grid' ).removeClass( 'hidden' ).photosetGrid( {
-            //    gutter: '5px'
-            //} );
+            var postId = $post.attr( 'data-pid' ),
+                $photoswipeContainers = $post.find( '.photoset-grid' );
+
             $post.find( '.photoset-grid' ).removeClass( 'hidden' ).justifiedGallery( {
-                //selector: '.img-photoset',
                 rowHeight: 160,
-                maxRowHeight: 300,
-                //lastRow: 'center',
+                fixedHeight: true,
+                lastRow: 'justify',
                 margins: 4,
                 waitThumbnailsLoad: false,
-                //cssAnimation: true,
-                //imagesAnimationDuration: 300,
                 captions: true,
                 captionSettings: {
                     animationDuration: 500,
@@ -36,8 +31,6 @@
         };
 
         photoswipe.initPhotoswipe = function( $photoswipeContainer, photosetId ) {
-            //$photoswipeContainer.addClass( 'photoswipe-active' );
-
             var $images = $photoswipeContainer.find( '.img-photoset' );
 
             photosets[photosetId] = [];
