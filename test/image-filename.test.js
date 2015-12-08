@@ -8,19 +8,22 @@ var assert = require( 'assert' ),
 describe( 'Image Filename', function() {
     describe( 'decode', function() {
         it( 'decoding', function() {
-            var filename = '8b58d54b86c4ccd44a0e4172e240a047-o07800500-w280-h1aa.jpg';
+            var filename = '8b58d54b86c4ccd44a0e4172e240a047-o0640042b-w085-h0c8-eo5-r05a-fl.jpg';
             assert.deepEqual( imageFilename.decode( filename ), {
                 ext: ".jpg",
                 hash: "8b58d54b86c4ccd44a0e4172e240a047",
-                originalHeight: 1280,
-                originalWidth: 1920,
-                width: 640,
-                height: 426
+                originalWidth: 1600,
+                originalHeight: 1067,
+                exifOrientation: 5,
+                width: 133,
+                height: 200,
+                rotation: 90,
+                flip: true
             }, 'matches' );
         } );
     } );
     describe( 'encode', function() {
-        var filename = '8b58d54b86c4ccd44a0e4172e240a047-o07800500-w280-h1aa';
+        var filename = '8b58d54b86c4ccd44a0e4172e240a0471-o07800500-w280-h1aa';
         var ext = '.jpg';
         it( 'should encode imageinfo object to filename', function() {
             assert.equal( imageFilename.encode( {
@@ -45,8 +48,8 @@ describe( 'Image Filename', function() {
     } );
     describe( 'replace', function() {
         it( 'should replace width and height info in filename', function() {
-            var sourceFilename = '8b58d54b86c4ccd44a0e4172e240a047-o07800500-w280-h1aa.jpg';
-            var targetFilename = '8b58d54b86c4ccd44a0e4172e240a047-o07800500-w190-h0c8.jpg';
+            var sourceFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o07800500-w280-h1aa.jpg';
+            var targetFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o07800500-w190-h0c8.jpg';
             assert.equal( imageFilename.replace( sourceFilename, {
                 width: 400,
                 height: 200
@@ -55,26 +58,33 @@ describe( 'Image Filename', function() {
     } );
     describe( 'original', function() {
         it( 'should return original image filename', function() {
-            var sourceFilename = '8b58d54b86c4ccd44a0e4172e240a047-o07800500-w280-h1aa.jpg';
-            var targetFilename = '8b58d54b86c4ccd44a0e4172e240a047-o07800500.jpg';
+            var sourceFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o07800500-w280-h1aa.jpg';
+            var targetFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o07800500.jpg';
             assert.equal( imageFilename.original( sourceFilename ), targetFilename, 'matches' );
         } );
     } );
     describe( 'thumbnail', function() {
         it( 'should return image thumbnail filename', function() {
-            var sourceFilename = '8b58d54b86c4ccd44a0e4172e240a047-o0640042b-w280-h1aa.jpg';
-            var targetFilename = '8b58d54b86c4ccd44a0e4172e240a047-o0640042b-w0c8-h085.jpg';
+            var sourceFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o0640042b-w280-h1aa.jpg';
+            var targetFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o0640042b-w0c8-h085.jpg';
+            assert.equal( imageFilename.thumbnail( sourceFilename, 200 ), targetFilename, 'matches' );
+        } );
+    } );
+    describe( 'thumbnail', function() {
+        it( 'should return image thumbnail filename', function() {
+            // 640x426->200x133->133x200->085x0c8
+            var sourceFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o0640042b-w280-h1aa-eo5.jpg';
+            var targetFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o0640042b-w085-h0c8-eo5-r05a-fl.jpg';
             assert.equal( imageFilename.thumbnail( sourceFilename, 200 ), targetFilename, 'matches' );
         } );
     } );
     describe( 'url parser', function() {
         it( 'should return image thumbnail filename', function() {
-            var url = 'http://localhost:4567/static/b8172eb9/8b58d54b86c4ccd44a0e4172e240a047-o07800500-w280-h1aa/img_123.jpg';
-            var targetFilename = '8b58d54b86c4ccd44a0e4172e240a047-o07800500-w280-h1aa.jpg';
+            var url = 'http://localhost:4567/static/b8172eb9/8b58d54b86c4ccd44a0e4172e240a0471-o07800500-w280-h1aa/img_123.jpg';
             var urlParser = imageFilename.urlParser( url );
             assert.deepEqual( urlParser, {
                 baseUrl: 'http://localhost:4567/static/',
-                encodedFilename: '8b58d54b86c4ccd44a0e4172e240a047-o07800500-w280-h1aa',
+                encodedFilename: '8b58d54b86c4ccd44a0e4172e240a0471-o07800500-w280-h1aa',
                 originalFilename: 'img_123',
                 ext: '.jpg'
             }, 'matches' );

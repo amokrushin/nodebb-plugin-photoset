@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-photoset",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "NodeBB plugin",
   "main": "library.js",
   "repository": {
@@ -28,7 +28,7 @@
     "amqplib": "^0.4.0",
     "cheerio": "^0.19.0",
     "gcloud": "^0.25.0",
-    "image-size-stream": "^1.1.0",
+    "gm": "^1.21.1",
     "lodash": "^3.10.1",
     "multiparty": "^4.1.2"
   },
