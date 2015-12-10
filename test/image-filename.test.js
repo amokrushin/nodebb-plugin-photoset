@@ -6,88 +6,132 @@ var assert = require( 'assert' ),
 
 
 describe( 'Image Filename', function() {
-    describe( 'decode', function() {
-        it( 'decoding', function() {
-            var filename = '8b58d54b86c4ccd44a0e4172e240a047-o0640042b-w085-h0c8-eo5-r05a-fl.jpg';
-            assert.deepEqual( imageFilename.decode( filename ), {
-                ext: ".jpg",
-                hash: "8b58d54b86c4ccd44a0e4172e240a047",
-                originalWidth: 1600,
-                originalHeight: 1067,
-                exifOrientation: 5,
-                width: 133,
-                height: 200,
-                rotation: 90,
-                flip: true
-            }, 'matches' );
+    describe( 'base encoding and decoding', function() {
+        var test = [
+            {
+                filename: 'JCo1T9Zk6nd2woArdmcUj12-o2YP22b',
+                ext: '.jpg',
+                imageinfo: {
+                    ext: ".jpg",
+                    hash: "JCo1T9Zk6nd2woArdmcUj1",
+                    originalWidth: 5184,
+                    originalHeight: 3456
+                }
+            }, {
+                filename: 'JCo1T9Zk6nd2woArdmcUj12-o2YP22b-ta7P5-r5f-f',
+                ext: '.jpg',
+                imageinfo: {
+                    ext: ".jpg",
+                    hash: "JCo1T9Zk6nd2woArdmcUj1",
+                    originalWidth: 5184,
+                    originalHeight: 3456,
+                    width: 1920,
+                    height: 1280,
+                    rotation: 270,
+                    flip: true
+                }
+            }
+        ];
+        test.forEach( function( t, i ) {
+            it( 'should decode image filename #' + i, function() {
+                assert.deepEqual( imageFilename.decode( t.filename + t.ext ), t.imageinfo, 'matches' );
+            } );
+            it( 'should encode imageinfo object to filename #' + i, function() {
+                assert.equal( imageFilename.encode( t.imageinfo ), t.filename + t.ext, 'matches' );
+            } );
         } );
+
     } );
-    describe( 'encode', function() {
-        var filename = '8b58d54b86c4ccd44a0e4172e240a0471-o07800500-w280-h1aa';
-        var ext = '.jpg';
-        it( 'should encode imageinfo object to filename', function() {
-            assert.equal( imageFilename.encode( {
-                ext: ".jpg",
-                hash: "8b58d54b86c4ccd44a0e4172e240a047",
-                originalHeight: 1280,
-                originalWidth: 1920,
-                width: 640,
-                height: 426
-            } ), filename + ext, 'matches' );
-        } );
-        it( 'should return filename without extension', function() {
-            assert.equal( imageFilename.encode( {
-                ext: ".jpg",
-                hash: "8b58d54b86c4ccd44a0e4172e240a047",
-                originalHeight: 1280,
-                originalWidth: 1920,
-                width: 640,
-                height: 426
-            }, true ), filename, 'matches' );
-        } );
-    } );
-    describe( 'replace', function() {
-        it( 'should replace width and height info in filename', function() {
-            var sourceFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o07800500-w280-h1aa.jpg';
-            var targetFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o07800500-w190-h0c8.jpg';
-            assert.equal( imageFilename.replace( sourceFilename, {
-                width: 400,
-                height: 200
-            } ), targetFilename, 'matches' );
+    describe( 'thumbnail', function() {
+        it( 'should make thumbnail filename from image original filename', function() {
+            var test = [
+                {
+                    sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o2YP22b.jpg',
+                    targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o2YP22b-ta7P5.jpg'
+                },
+                {
+                    sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP.jpg',
+                    targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7.jpg'
+                },
+                {
+                    sourceFilename: 'R1QDEPHHyZEibbqdA8WG5D2-oBM8m-t9HC3-r5f.jpg',
+                    targetFilename: 'R1QDEPHHyZEibbqdA8WG5D2-oBM8m-tRqa7-r5f.jpg'
+                }
+            ];
+            test.forEach( function( t ) {
+                assert.equal( imageFilename.thumbnail( t.sourceFilename, 1920 ), t.targetFilename, 'matches' );
+            } );
         } );
     } );
     describe( 'original', function() {
-        it( 'should return original image filename', function() {
-            var sourceFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o07800500-w280-h1aa.jpg';
-            var targetFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o07800500.jpg';
+        it( 'should return original image filename from thumbnail filename', function() {
+            var sourceFilename = 'JCo1T9Zk6nd2woArdmcUj12-o2YP22b-ta7P5-r5f-f.jpg',
+                targetFilename = 'JCo1T9Zk6nd2woArdmcUj12-o2YP22b.jpg';
+
             assert.equal( imageFilename.original( sourceFilename ), targetFilename, 'matches' );
         } );
     } );
-    describe( 'thumbnail', function() {
-        it( 'should return image thumbnail filename', function() {
-            var sourceFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o0640042b-w280-h1aa.jpg';
-            var targetFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o0640042b-w0c8-h085.jpg';
-            assert.equal( imageFilename.thumbnail( sourceFilename, 200 ), targetFilename, 'matches' );
-        } );
-    } );
-    describe( 'thumbnail', function() {
-        it( 'should return image thumbnail filename', function() {
-            // 640x426->200x133->133x200->085x0c8
-            var sourceFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o0640042b-w280-h1aa-eo5.jpg';
-            var targetFilename = '8b58d54b86c4ccd44a0e4172e240a0471-o0640042b-w085-h0c8-eo5-r05a-fl.jpg';
-            assert.equal( imageFilename.thumbnail( sourceFilename, 200 ), targetFilename, 'matches' );
+    describe( 'auto orientation', function() {
+
+        var test = [
+            {
+                sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7.jpg',
+                exifOrintation: 1,
+                targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7.jpg'
+            }, {
+                sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7.jpg',
+                exifOrintation: 2,
+                targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7-f.jpg'
+            }, {
+                sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7.jpg',
+                exifOrintation: 3,
+                targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7-r47.jpg'
+            }, {
+                sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7.jpg',
+                exifOrintation: 4,
+                targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7-r47-f.jpg'
+            }, {
+                sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7.jpg',
+                exifOrintation: 5,
+                targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-ta7P5-r2Z-f.jpg'
+            }, {
+                sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7.jpg',
+                exifOrintation: 6,
+                targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-ta7P5-r2Z.jpg'
+            }, {
+                sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7.jpg',
+                exifOrintation: 7,
+                targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-ta7P5-r5f-f.jpg'
+            }, {
+                sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o2YP22b-ta7P5.jpg',
+                exifOrintation: 8,
+                targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o2YP22b-tP5a7-r5f.jpg'
+            }
+        ];
+        test.forEach( function( t ) {
+            it( 'should make thumbnail filename from image original filename', function() {
+                assert.equal( imageFilename.autoOrientation( t.sourceFilename, t.exifOrintation ), t.targetFilename, 'matches' );
+            } );
         } );
     } );
     describe( 'url parser', function() {
-        it( 'should return image thumbnail filename', function() {
-            var url = 'http://localhost:4567/static/b8172eb9/8b58d54b86c4ccd44a0e4172e240a0471-o07800500-w280-h1aa/img_123.jpg';
-            var urlParser = imageFilename.urlParser( url );
-            assert.deepEqual( urlParser, {
-                baseUrl: 'http://localhost:4567/static/',
-                encodedFilename: '8b58d54b86c4ccd44a0e4172e240a0471-o07800500-w280-h1aa',
-                originalFilename: 'img_123',
-                ext: '.jpg'
-            }, 'matches' );
+
+        var test = [
+            {
+                url: 'http://localhost:4567/static/360bebc8/87b93c42061641ae2df54d2-oBM8m-tC39H/landscape_1.jpg',
+                result: {
+                    baseUrl: 'http://localhost:4567/static/',
+                    encodedFilename: '87b93c42061641ae2df54d2-oBM8m-tC39H',
+                    ext: '.jpg',
+                    filenameHmac: '360bebc8',
+                    originalFilename: 'landscape_1'
+                }
+            }
+        ];
+        test.forEach( function( t ) {
+            it( 'should return parser url', function() {
+                assert.deepEqual( imageFilename.urlParser( t.url ), t.result, 'matches' );
+            } );
         } );
     } );
 } );

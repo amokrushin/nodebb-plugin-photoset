@@ -12,11 +12,6 @@
       "method": "addAdminNavigation"
     },
     {
-      "hook": "filter:uploadImage",
-      "method": "upload",
-      "priority": 6
-    },
-    {
       "hook": "filter:parse.post",
       "method": "parse",
       "callbacked": true

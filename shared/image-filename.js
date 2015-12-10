@@ -13,23 +13,72 @@
 
         var imageFilename = {};
 
-        var FORMAT_VERSION = '1';
+        var FORMAT_VERSION = '2';
+
+        var base58 = (function() {
+            /**
+             * @url https://gist.github.com/inflammable/2929362
+             */
+            var bs58 = (function( alphabet ) {
+                var base = alphabet.length;
+                return {
+                    encode: function( enc ) {
+                        if( typeof enc !== 'number' || enc !== parseInt( enc ) )
+                            throw '"encode" only accepts integers.';
+                        var encoded = '';
+                        while( enc )
+                        {
+                            var remainder = enc % base;
+                            enc = Math.floor( enc / base );
+                            encoded = alphabet[remainder].toString() + encoded;
+                        }
+                        return encoded;
+                    },
+                    decode: function( dec ) {
+                        if( typeof dec !== 'string' )
+                            throw '"decode" only accepts strings.';
+                        var decoded = 0;
+                        while( dec )
+                        {
+                            var alphabetPosition = alphabet.indexOf( dec[0] );
+                            if( alphabetPosition < 0 )
+                                throw '"decode" can\'t find "' + dec[0] + '" in the alphabet: "' + alphabet + '"';
+                            var powerOf = dec.length - 1;
+                            decoded += alphabetPosition * (Math.pow( base, powerOf ));
+                            dec = dec.substring( 1 );
+                        }
+                        return decoded;
+                    }
+                };
+            })( '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz' );
+
+            return {
+                encode: function( num, fixedLength ) {
+                    var b58 = bs58.encode( parseInt( num ) );
+                    if( !fixedLength ) return b58;
+                    if( b58.length > fixedLength ) return new Error( 'number length is more than required' );
+                    while( b58.length < fixedLength ) b58 = '1' + b58;
+                    return b58;
+                },
+                decode: function( b58 ) {
+                    return bs58.decode( b58 );
+                }
+            }
+        })();
+
 
         imageFilename.decode = function( filename ) {
-            var reL1 = /(\w{32})(\w?)([\w-]*)(\.\w{3,4})?$/,
-                reL2 = /-(o|w|h|r|c|eo|fl)([a-f0-9]*)/g,
+            var reL1 = /(\w{22})(\w)(-o[\w-]*)(\.\w{3,4})?$/,
+                reL2 = /-(o|t|r|f)(\w*)/g,
+                reL3,
                 fileinfo = {},
                 matchL1, matchL2, matchL3;
 
-            matchL1 = filename.toLowerCase().match( reL1 );
-            if( !matchL1 || matchL1.length !== 5 )
-            {
-                return new Error( 'Wrong filename' );
-            }
-            if( matchL1[2] && matchL1[2] > FORMAT_VERSION )
-            {
-                return new Error( 'Unsupported filename format' );
-            }
+            matchL1 = filename.match( reL1 );
+            if( !matchL1 || matchL1.length !== 5 ) return null;
+            if( !matchL1[2] ) return null;
+            if( matchL1[2] !== FORMAT_VERSION ) return null;
+
             fileinfo.hash = matchL1[1];
             fileinfo.ext = matchL1[4];
 
@@ -38,89 +87,63 @@
                 switch( matchL2[1] )
                 {
                     case 'o':
-                        matchL3 = matchL2[2].match( /.{1,4}/g );
-                        fileinfo.originalWidth = parseInt( matchL3[0], 16 );
-                        fileinfo.originalHeight = parseInt( matchL3[1], 16 );
+                        reL3 = new RegExp( '.{1,' + matchL2[2].length / 2 + '}', 'g' );
+                        matchL3 = matchL2[2].match( reL3 );
+                        fileinfo.originalWidth = base58.decode( matchL3[0] );
+                        fileinfo.originalHeight = base58.decode( matchL3[1] );
                         break;
-                    case 'eo':
-                        fileinfo.exifOrientation = parseInt( matchL2[2] );
-                        break;
-                    case 'w':
-                        fileinfo.width = parseInt( matchL2[2], 16 );
-                        break;
-                    case 'h':
-                        fileinfo.height = parseInt( matchL2[2], 16 );
+                    case 't':
+                        reL3 = new RegExp( '.{1,' + matchL2[2].length / 2 + '}', 'g' );
+                        matchL3 = matchL2[2].match( reL3 );
+                        fileinfo.width = base58.decode( matchL3[0] );
+                        fileinfo.height = base58.decode( matchL3[1] );
                         break;
                     case 'r':
-                        fileinfo.rotation = parseInt( matchL2[2], 16 );
+                        fileinfo.rotation = base58.decode( matchL2[2] );
                         break;
-                    case 'fl':
+                    case 'f':
                         fileinfo.flip = true;
                         break;
-                    // future usage
-                    /*case 'c':
-                     matchL3 = matchL2[2].match( /.{1,2}/g );
-                     fileinfo.cropLeft = parseInt( matchL3[0], 16 );
-                     fileinfo.cropTop = parseInt( matchL3[1], 16 );
-                     break;
-                     */
                 }
             }
             return fileinfo;
         };
 
         imageFilename.encode = function( fileinfo, withoutExt ) {
-            if( !(fileinfo.hash && fileinfo.ext && fileinfo.originalWidth && fileinfo.originalWidth) )
+            if( !(fileinfo.hash && fileinfo.ext && fileinfo.originalWidth && fileinfo.originalHeight) )
             {
-                return new Error( 'hash, ext, originalWidth, originalHeight should be set' );
+                return null;
             }
 
-            function toHexString( i, c ) {
-                var s = parseInt( i ).toString( 16 );
-                while( s.length < c ) s = '0' + s;
-                return s;
-            }
+            var filename = [],
+                fixedLength;
 
-            var filename = [];
             filename.push( fileinfo.hash, FORMAT_VERSION );
             if( fileinfo.originalWidth && fileinfo.originalHeight )
             {
+                fixedLength = fileinfo.originalWidth > 3363 || fileinfo.originalHeight > 3363 ? 3 : 2;
                 filename.push( '-o',
-                    toHexString( fileinfo.originalWidth, 4 ),
-                    toHexString( fileinfo.originalHeight, 4 )
+                    base58.encode( fileinfo.originalWidth, fixedLength ),
+                    base58.encode( fileinfo.originalHeight, fixedLength )
                 );
             }
             if( fileinfo.width && fileinfo.height )
             {
-                filename.push( '-w',
-                    toHexString( fileinfo.width, 3 )
-                );
-                filename.push( '-h',
-                    toHexString( fileinfo.height, 3 )
-                );
-            }
-            if( fileinfo.exifOrientation )
-            {
-                filename.push( '-eo',
-                    fileinfo.exifOrientation
+                fixedLength = fileinfo.width > 3363 || fileinfo.height > 3363 ? 3 : 2;
+                filename.push( '-t',
+                    base58.encode( fileinfo.width, fixedLength ),
+                    base58.encode( fileinfo.height, fixedLength )
                 );
             }
             if( fileinfo.rotation )
             {
                 filename.push( '-r',
-                    toHexString( fileinfo.rotation, 3 )
+                    base58.encode( fileinfo.rotation )
                 );
             }
             if( fileinfo.flip )
             {
-                filename.push( '-fl' );
-            }
-            if( fileinfo.cropLeft && fileinfo.cropTop )
-            {
-                filename.push( '-c',
-                    toHexString( fileinfo.cropLeft, 2 ),
-                    toHexString( fileinfo.cropTop, 2 )
-                );
+                filename.push( '-f' );
             }
             if( !withoutExt )
             {
@@ -130,37 +153,30 @@
             return filename.join( '' );
         };
 
-        function extend( object, source ) {
-            for( var prop in source )
-            {
-                if( !source.hasOwnProperty( prop ) ) continue;
-                object[prop] = source[prop];
-            }
-        }
-
-        imageFilename.replace = function( filename, replaceWith, withoutExt ) {
-            var imageinfo = imageFilename.decode( filename );
-            extend( imageinfo, replaceWith );
-            return imageFilename.encode( imageinfo, withoutExt );
-        };
-
         imageFilename.original = function( filename, withoutExt ) {
             var imageinfo = imageFilename.decode( filename );
             return imageFilename.encode( {
                 hash: imageinfo.hash,
                 ext: imageinfo.ext,
                 originalWidth: imageinfo.originalWidth,
-                originalHeight: imageinfo.originalHeight,
-                exifOrientation: imageinfo.exifOrientation || null
+                originalHeight: imageinfo.originalHeight
             }, withoutExt );
         };
 
         imageFilename.thumbnail = function( filename, maxDimension, withoutExt ) {
             var imageinfo = imageFilename.decode( filename ),
-                aspectRatio = imageinfo.originalWidth / imageinfo.originalHeight,
-                w = aspectRatio > 1 ? maxDimension : parseInt( maxDimension * aspectRatio ),
-                h = aspectRatio > 1 ? parseInt( maxDimension / aspectRatio ) : maxDimension;
+                aspectRatio = imageinfo.width && imageinfo.height
+                    ? imageinfo.width / imageinfo.height
+                    : imageinfo.originalWidth / imageinfo.originalHeight;
+            imageinfo.width = aspectRatio > 1 ? maxDimension : parseInt( maxDimension * aspectRatio );
+            imageinfo.height = aspectRatio > 1 ? parseInt( maxDimension / aspectRatio ) : maxDimension;
+            return imageFilename.encode( imageinfo, withoutExt );
+        };
 
+        imageFilename.autoOrientation = function( filename, exifOrientation, withoutExt ) {
+            var imageinfo = imageFilename.decode( filename ),
+                w = imageinfo.width,
+                h = imageinfo.height;
             /*
              exif orientation
              N  | rotation cw | rotation code | flip-x
@@ -174,7 +190,7 @@
              7  |     270     |       3       |   yes
              */
 
-            switch( imageinfo.exifOrientation )
+            switch( exifOrientation )
             {
                 case 2:
                     imageinfo.flip = true;
@@ -212,13 +228,15 @@
         };
 
         imageFilename.urlParser = function( url ) {
-            var urlParser = url.match( /(.+\/)[a-z0-9]+\/([-0-9a-z.]+)\/([^\/]+)(\.[a-z]{2,4})$/ );
+            /* https://regex101.com/r/yU1oN3/3 */
+            var urlParser = url.match( /(.+\/)([0-9A-Za-z]{8})\/([0-9A-Za-z]{23}-o[-0-9A-Za-z]+)\/([^\/]+)(\.[a-z]{2,4})$/ );
             if( !urlParser ) return null;
             return {
                 baseUrl: urlParser[1],
-                encodedFilename: urlParser[2],
-                originalFilename: urlParser[3],
-                ext: urlParser[4]
+                filenameHmac: urlParser[2],
+                encodedFilename: urlParser[3],
+                originalFilename: urlParser[4],
+                ext: urlParser[5]
             };
         };
 
