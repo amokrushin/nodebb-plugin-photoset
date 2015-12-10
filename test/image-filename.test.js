@@ -43,22 +43,36 @@ describe( 'Image Filename', function() {
 
     } );
     describe( 'thumbnail', function() {
-        it( 'should make thumbnail filename from image original filename', function() {
-            var test = [
-                {
-                    sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o2YP22b.jpg',
-                    targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o2YP22b-ta7P5.jpg'
-                },
-                {
-                    sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP.jpg',
-                    targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7.jpg'
-                },
-                {
-                    sourceFilename: 'R1QDEPHHyZEibbqdA8WG5D2-oBM8m-t9HC3-r5f.jpg',
-                    targetFilename: 'R1QDEPHHyZEibbqdA8WG5D2-oBM8m-tRqa7-r5f.jpg'
-                }
-            ];
-            test.forEach( function( t ) {
+        /**
+         { originalFilename: 'yxtoe0yl557e39f1a3b91-c000064-r000-a0302-w780.jpg',
+          uriFilename: 'yxtoe0yl557e39f1a3b91-c000064-r000-a0302-w780.jpg',
+          ext: '.jpg',
+          hash: 'wSxdRu5Xi5BnTx8zpwhan',
+          originalWidth: '1920',
+          originalHeight: '1280',
+          exifOrientation: 1,
+          filename: 'wSxdRu5Xi5BnTx8zpwhan2-oa7P5' }
+         */
+        var test = [
+            {
+                sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o2YP22b.jpg',
+                targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o2YP22b-ta7P5.jpg'
+            },
+            {
+                sourceFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP.jpg',
+                targetFilename: 'JCo1T9Zk6nd2woArdmcUj12-o22b2YP-tP5a7.jpg'
+            },
+            {
+                sourceFilename: 'R1QDEPHHyZEibbqdA8WG5D2-oBM8m-t9HC3-r5f.jpg',
+                targetFilename: 'R1QDEPHHyZEibbqdA8WG5D2-oBM8m-tRqa7-r5f.jpg'
+            },
+            {
+                sourceFilename: 'wSxdRu5Xi5BnTx8zpwhan2-oa7P5.jpg',
+                targetFilename: 'wSxdRu5Xi5BnTx8zpwhan2-oa7P5-ta7P5.jpg'
+            }
+        ];
+        test.forEach( function( t, i ) {
+            it( 'should make thumbnail filename from image original filename #' + i, function() {
                 assert.equal( imageFilename.thumbnail( t.sourceFilename, 1920 ), t.targetFilename, 'matches' );
             } );
         } );

@@ -68,7 +68,7 @@
 
 
         imageFilename.decode = function( filename ) {
-            var reL1 = /(\w{22})(\w)(-o[\w-]*)(\.\w{3,4})?$/,
+            var reL1 = /(\w+)(\w)(-o[\w-]*)(\.\w{3,4})?$/,
                 reL2 = /-(o|t|r|f)(\w*)/g,
                 reL3,
                 fileinfo = {},
@@ -228,9 +228,13 @@
         };
 
         imageFilename.urlParser = function( url ) {
-            /* https://regex101.com/r/yU1oN3/3 */
-            var urlParser = url.match( /(.+\/)([0-9A-Za-z]{8})\/([0-9A-Za-z]{23}-o[-0-9A-Za-z]+)\/([^\/]+)(\.[a-z]{2,4})$/ );
+            /* https://regex101.com/r/yU1oN3/4 */
+            var re = new RegExp( '(.+\/)([0-9A-Za-z]{8})\/([0-9A-Za-z]+'
+                    + FORMAT_VERSION
+                    + '-o[-0-9A-Za-z]+)\\/([^\\/]+)(\\.[a-z]{2,4})$' ),
+                urlParser = url.match( re );
             if( !urlParser ) return null;
+
             return {
                 baseUrl: urlParser[1],
                 filenameHmac: urlParser[2],
