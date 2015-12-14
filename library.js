@@ -94,13 +94,4 @@ Plugin.postEdit = function( data, next ) {
     next( null, data );
 };
 
-Plugin.embedPhotoswipe = function( data, callback ) {
-    app.render( 'photoswipe', function( err, parsedTemplate ) {
-        if( !data.res.locals.footer ) return callback( null, data );
-        data.res.locals.footer = data.res.locals.footer.replace( '</body>', parsedTemplate + '</body>' );
-
-        callback( null, data );
-    } );
-};
-
 module.exports = Plugin;

@@ -25,10 +25,6 @@
       "hook": "filter:post.edit",
       "method": "postEdit",
       "callbacked": true
-    },
-    {
-      "hook": "filter:topic.build",
-      "method": "embedPhotoswipe"
     }
   ],
   "staticDirs": {

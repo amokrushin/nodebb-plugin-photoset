@@ -26,4 +26,14 @@
                 photoswipe.preview( $( '.composer-container .preview' ) );
             } );
     } );
+
+
+    $( window ).on( 'action:ajaxify.contentLoaded', function( event, data ) {
+        if( data.tpl !== 'topic' || $( '.pswp' ).length ) return;
+        console.log( 'protoswipe embedded' );
+        templates.parse( 'photoswipe', {}, function( html ) {
+            $( 'body' ).append( html );
+        } );
+    } );
 }());
+
