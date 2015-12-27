@@ -231,7 +231,7 @@
             /* https://regex101.com/r/yU1oN3/4 */
             var re = new RegExp( '(.+\/)([0-9A-Za-z]{8})\/([0-9A-Za-z]+'
                     + FORMAT_VERSION
-                    + '-o[-0-9A-Za-z]+)\\/([^\\/]+)(\\.[a-z]{2,4})$' ),
+                    + '-o[-0-9A-Za-z]+)\\/?([^\\/]+)?(\\.[a-z]{2,4})$' ),
                 urlParser = url.match( re );
             if( !urlParser ) return null;
 
