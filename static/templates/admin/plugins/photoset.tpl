@@ -1,230 +1,209 @@
-<div class="row">
-    <div class="col-lg-9">
+<!-- BEGIN status -->
+<div class="row status-wrapper">
+    <div class="col-lg-6">
         <div class="panel panel-default">
-            <div class="panel-heading">Sample Admin Page</div>
+            <div class="panel-heading">Notices</div>
             <div class="panel-body">
-                <form role="form" class="photoset-settings">
-                    <div class="row">
-                        <div class="col-sm-2 col-xs-12 settings-header">
-                            Google Cloud Storage
-                        </div>
-                        <div class="col-sm-10 col-xs-12">
-                            <div class="form-group">
-                                <label>Project ID</label>
-                                <input type="text" class="form-control" name="projectId"/><br/>
-
-                                <label for="loadJsonKey">Load JSON key</label>
-                                <input class="form-control" type="file" id="loadJsonKey"><br/>
-
-                                <textarea class="form-control" name="privateKey" hidden></textarea>
-
-                                <input type="text" class="form-control" name="clientEmail" hidden/>
-
-                                <button class="btn btn-primary" id="connect">Connect</button>
-                                <br/>
-
-                                <label for="bucket">Bucket</label>
-                                <select class="form-control" name="bucket">
-                                    <!-- BEGIN buckets -->
-                                    <option value="{buckets.name}">{buckets.name}</option>
-                                    <!-- END buckets -->
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-2 col-xs-12 settings-header">
-                            Image resize service
-                        </div>
-                        <div class="col-sm-10 col-xs-12">
-                            <div class="form-group">
-                                <label for="rmqHost">RabbitMQ host</label>
-                                <input type="text" class="form-control" id="rmqHost" name="rmqHost"/><br/>
-
-                                <label for="rmqUser">RabbitMQ user</label>
-                                <input class="form-control" type="text" id="rmqUser" name="rmqUser"><br/>
-
-                                <label for="rmqPassword">RabbitMQ user</label>
-                                <input class="form-control" type="text" id="rmqPassword" name="rmqPassword"><br/>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-2 col-xs-12 settings-header">
-                            Static files server
-                        </div>
-                        <div class="col-sm-10 col-xs-12">
-                            waaky3es56366804a7f5d-c000064-r000-a0302-w780.jpg
-                        </div>
-                        <div class="col-sm-10 col-xs-12">
-                            <div class="form-group">
-                                <label>Reverse proxy port</label>
-                                <input type="text" class="form-control" name="reverseProxyPort"/><br/>
-                            </div>
-                            <div class="form-group">
-                                <label>Uploads base URL</label>
-                                <input type="text" class="form-control" name="uploadsBaseUrl"/><br/>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-2 col-xs-12 settings-header">
-                            Image settings
-                        </div>
-                        <div class="col-sm-10 col-xs-12">
-                            <div class="form-group">
-                                <label for="imagePreviewMaxDimension">Preview image max dimension (width or
-                                    height)</label>
-                                <input type="text" class="form-control" id="imagePreviewMaxDimension"
-                                       name="imagePreviewMaxDimension"/><br/>
-                            </div>
-                            <div class="form-group">
-                                <label for="imageHighresMaxDimension">High quality image max dimension (width or
-                                    height)</label>
-                                <input type="text" class="form-control" id="imageHighresMaxDimension"
-                                       name="imageHighresMaxDimension"/><br/>
-                            </div>
-                        </div>
+                <div class="row">
+                    <div class="col-sm-8">
+                    <span class="lead">
+                    <!-- IF status.redis.success -->
+                    <i class="fa fa-fw fa-check text-success"></i>
+                    <!-- ELSE -->
+                    <i class="fa fa-fw fa-times text-danger"></i>
+                    <!-- ENDIF status.redis.success -->
+                        Redis
+                    </span>
                     </div>
-                </form>
+                </div>
+                <div class="row">
+                    <div class="col-sm-8">
+                    <span class="lead">
+                    <!-- IF status.gcs.success -->
+                    <i class="fa fa-fw fa-check text-success"></i>
+                    <!-- ELSE -->
+                    <i class="fa fa-fw fa-times text-danger"></i>
+                    <!-- ENDIF status.gcs.success -->
+                        Google Cloud Storage
+                    </span>
+                    </div>
+                    <div class="col-sm-4">
+                        <span class="lead"></span>
+                        <a class="btn btn-link btn-xs" href="#" data-toggle="modal"
+                           data-target="#gcs-connection__modal">connection</a>
+                        <!-- IF status.gcs.connection -->
+                        <a class="btn btn-link btn-xs" href="#" data-toggle="modal"
+                           data-target="#gcs-settings__modal">settings</a>
+                        <!-- ELSE -->
+                        <a class="btn btn-link btn-xs disabled" href="#" data-toggle="modal"
+                           data-target="#gcs-settings__modal">settings</a>
+                        <!-- ENDIF status.gcs.connection -->
+                    </div>
+                    <div class="col-sm-12">
+                        <span class="lead"></span>
+                        <!-- IF status.gcs.message -->
+                        <span class="text-danger">{status.gcs.message}</span>
+                        <!-- ENDIF status.gcs.message -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-8">
+                    <span class="lead">
+                    <!-- IF status.rmq.success -->
+                    <i class="fa fa-fw fa-check text-success"></i>
+                    <!-- ELSE -->
+                    <i class="fa fa-fw fa-times text-danger"></i>
+                    <!-- ENDIF status.rmq.success -->
+                        RabbitMQ
+                    </span>
+                    </div>
+                    <div class="col-sm-4">
+                        <span class="lead"></span>
+                        <a class="btn btn-link btn-xs" href="#" data-toggle="modal"
+                           data-target="#rmq-connection__modal">connection</a>
+                    </div>
+                    <div class="col-sm-12">
+                        <span class="lead"></span>
+                        <!-- IF status.rmq.message -->
+                        <span class="text-danger">{status.rmq.message}</span>
+                        <!-- ENDIF status.rmq.message -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-8">
+                    <span class="lead">
+                        <!-- IF status.ipw.success -->
+                            <!-- IF status.ipw.updateRequired -->
+                        <i class="fa fa-fw fa-exclamation text-warning"></i>
+                            <!-- ELSE -->
+                        <i class="fa fa-fw fa-check text-success"></i>
+                            <!-- ENDIF status.ipw.updateRequired -->
+                        <!-- ELSE -->
+                        <i class="fa fa-fw fa-times text-danger"></i>
+                        <!-- ENDIF status.ipw.success -->
+                        Image resize workers
+                    </span>
+                    </div>
+                    <div class="col-sm-4">
+                        <span class="lead"></span>
+                        <a class="btn btn-link btn-xs" href="#" data-toggle="modal" data-target="#ipw-apikey__modal">API
+                            keys</a>
+                    </div>
+                    <div class="col-sm-12">
+                        <span class="lead"></span>
+                        <!-- IF status.ipw.message -->
+                        <span class="text-danger">{status.ipw.message}</span>
+                        <!-- ENDIF status.ipw.message -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-8">
+                    <span class="lead">
+                    <!-- IF status.proxyCache.success -->
+                    <i class="fa fa-fw fa-check text-success"></i>
+                    <!-- ELSE -->
+                    <i class="fa fa-fw fa-times text-danger"></i>
+                    <!-- ENDIF status.proxyCache.success -->
+                        Caching reverse proxy
+                    </span>
+                    </div>
+                    <div class="col-sm-12">
+                        <span class="lead"></span>
+                        <!-- IF status.proxyCache.message -->
+                        <span class="text-danger">{status.proxyCache.message}</span>
+                        <!-- ENDIF status.proxyCache.message -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-8">
+                    <span class="lead">
+                    <!-- IF status.photoset.success -->
+                    <i class="fa fa-fw fa-check text-success"></i>
+                    <!-- ELSE -->
+                    <i class="fa fa-fw fa-times text-danger"></i>
+                    <!-- ENDIF status.photoset.success -->
+                        Photoset
+                    </span>
+                    </div>
+                    <div class="col-sm-4">
+                        <span class="lead"></span>
+                        <a class="btn btn-link btn-xs" href="#" data-toggle="modal"
+                           data-target="#photoset-settings__modal">settings</a>
+                    </div>
+                    <div class="col-sm-12">
+                        <span class="lead"></span>
+                        <!-- IF status.photoset.message -->
+                        <span class="text-danger">{status.photoset.message}</span>
+                        <!-- ENDIF status.photoset.message -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-3">
+    <div class="col-lg-6">
         <div class="panel panel-default">
-            <div class="panel-heading">Control Panel</div>
+            <div class="panel-heading">Image processing workers</div>
             <div class="panel-body">
-                <button class="btn btn-primary" id="save">Save Settings</button>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Host</th>
+                        <th>Started</th>
+                        <th>Version</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- BEGIN status.ipw.workers -->
+                    <tr>
+                        <td>{status.ipw.workers.host}</td>
+                        <td class="timestamp">{status.ipw.workers.startedAt}</td>
+                        <td class="worker__version">{status.ipw.workers.version}</td>
+                        <td class="worker__status">{status.ipw.workers.status}</td>
+                    </tr>
+                    <!-- END status.ipw.workers -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
-
+<!-- END status -->
 
 <script type="text/javascript">
-    'use strict';
-    /* globals define, $, socket, ajaxify, app */
+    $( function() {
+        require( ['moment', 'photoset/admin/status'], function( moment, status ) {
+            status.statusFormatting( $( '.status-wrapper' ) );
+        } );
+    } );
+
     require( ['settings'], function( Settings ) {
-        console.log( 'loaded' );
         var Plugin = {};
 
-        Plugin.init = function() {
-            console.log( 'init' );
-            Plugin.initSettings();
-            $( '#loadJsonKey' ).on( 'change', Plugin.handleFileSelect );
-
-            $( '#connect' ).on( 'click', function( e ) {
-                var projectId = $( 'input[name="projectId"]' ).val(),
-                        clientEmail = $( 'input[name="clientEmail"]' ).val(),
-                        privateKey = $( 'textarea[name="privateKey"]' ).val();
-
-                e.preventDefault();
-                Plugin.gcsConnect( projectId, clientEmail, privateKey, function( err, buckets ) {
-                    app.alertSuccess( 'Connected successfully' );
-
-                    var $select = $( 'select[name="bucket"]' ).html( '' );
-                    buckets.forEach( function( bucket ) {
-                        $select.append( $( '<option>' ).text( bucket.name ) );
-                    } );
+        function loadModals( paths ) {
+            paths.forEach( function( module ) {
+                templates.parse( module, {}, function( templateHtml ) {
+                    $( templateHtml ).appendTo( 'body' );
                 } );
             } );
+        }
+
+        Plugin.init = function() {
+            Plugin.initSettings();
+            loadModals( [
+                'admin/modals/gcs-connection',
+                'admin/modals/gcs-settings',
+                'admin/modals/rmq-connection',
+                'admin/modals/ipw-apikeys',
+                'admin/modals/photoset-settings'
+            ] );
         };
 
         Plugin.initSettings = function() {
-            Settings.load( 'photoset', $( '.photoset-settings' ) );
-            $( '#save' ).on( 'click', function() {
-                Settings.save( 'photoset', $( '.photoset-settings' ), function() {
-                    app.alert( {
-                        type: 'success',
-                        alert_id: 'photoset-saved',
-                        title: 'Settings Saved',
-                        message: 'Please reload your NodeBB to apply these settings',
-                        clickfn: function() {
-                            socket.emit( 'admin.reload' );
-                        }
-                    } )
-                } );
-            } );
+            Settings.sync( 'photoset', $( '#photoset-settings' ) );
 
-        };
-
-        Plugin.handleFileSelect = function( e ) {
-            var reader = new FileReader(),
-                    jsonKey;
-
-            reader.onload = function() {
-                try
-                {
-                    jsonKey = JSON.parse( reader.result );
-                } catch( err )
-                {
-                    return app.alertError( 'File is not valid Google JSON key' );
-                }
-                if( !jsonKey.client_email || !jsonKey.private_key )
-                {
-                    return app.alertError( 'File is not valid Google JSON key' );
-                }
-                $( 'input[name="clientEmail"]' ).val( jsonKey.client_email );
-                $( 'textarea[name="privateKey"]' ).val( jsonKey.private_key );
-            };
-
-            reader.readAsText( e.target.files[0] );
-        };
-
-        Plugin.gcsConnect = function( projectId, clientEmail, privateKey, callback ) {
-            console.log( 'gcs connect' );
-            socket.emit( 'plugins.photoset.gcsConnect', {
-                projectId: projectId,
-                clientEmail: clientEmail,
-                privateKey: privateKey
-            }, function( err, data ) {
-                if( err ) return app.alertError( err.message );
-                callback( null, data.buckets );
-            } );
         };
 
         Plugin.init();
-
     } );
-
-    /* globals app, socket */
-    //    $( document ).ready( function() {
-    //        $( '#save' ).on( 'click', function() {
-    //            $.post( config.relative_path + '/api/admin/plugins/dbsearch/save', {
-    //                _csrf: $( '#csrf_token' ).val(),
-    //                topicLimit: $( '#topicLimit' ).val(),
-    //                postLimit: $( '#postLimit' ).val()
-    //            }, function( data ) {
-    //                if( typeof data === 'string' )
-    //                {
-    //                    app.alertSuccess( 'Settings saved' );
-    //                }
-    //            } );
-    //
-    //            return false;
-    //        } );
-    //
-    //        $( '#clear-index' ).on( 'click', function() {
-    //            socket.emit( 'admin.plugins.dbsearch.clearIndex', function( err ) {
-    //                if( err )
-    //                {
-    //                    app.alertError( err.message );
-    //                    clearProgress();
-    //                }
-    //            } );
-    //            startProgress( 'Index Cleared!' );
-    //            return false;
-    //        } );
-    //
-    //        $( '#reindex' ).on( 'click', function() {
-    //            socket.emit( 'admin.plugins.dbsearch.reindex', function( err ) {
-    //                if( err )
-    //                {
-    //                    app.alertError( err.message );
-    //                    clearProgress();
-    //                }
-    //            } );
-    //            startProgress( 'Content Indexed!' );
-    //
-    //            return false;
-    //        } );
-    //    } );
-
 </script>

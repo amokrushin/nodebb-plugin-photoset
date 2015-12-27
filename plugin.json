@@ -13,18 +13,15 @@
     },
     {
       "hook": "filter:parse.post",
-      "method": "parse",
-      "callbacked": true
+      "method": "parse"
     },
     {
       "hook": "filter:post.save",
-      "method": "postSave",
-      "callbacked": true
+      "method": "postSave"
     },
     {
       "hook": "filter:post.edit",
-      "method": "postEdit",
-      "callbacked": true
+      "method": "postEdit"
     }
   ],
   "staticDirs": {
@@ -37,16 +34,19 @@
   "css": [
     "static/vendor/justifiedGallery.min.css",
     "static/vendor/photoswipe.css",
-    "static/vendor/photoswipe-default-skin.css"
+    "static/vendor/photoswipe-default-skin.css",
+    "static/css/photoset.css"
   ],
   "scripts": [
+    "static/lib/admin/status.js",
     "static/lib/admin.js",
     "static/vendor/jquery.justifiedGallery.min.js",
     "static/vendor/photoswipe.js",
     "static/vendor/photoswipe-ui-default.js",
     "shared/image-filename.js",
     "static/lib/photoswipe.js",
-    "static/lib/photoset.js"
+    "static/lib/photoset.js",
+    "static/vendor/moment.min.js"
   ],
   "templates": "static/templates"
 }
