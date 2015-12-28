@@ -57,6 +57,12 @@ function initSettings( callback ) {
         photoset: {
             hmac: {
                 key: ''
+            },
+            uploads: {
+                allowedImageTypes: ['jpg', 'png', 'gif'],
+                allowedImageMaxFileSize: 20 * 1024 * 1024,
+                allowedFileTypes: ['pdf'],
+                allowedFileMaxFileSize: 1 * 1024 * 1024
             }
         }
     };
@@ -65,6 +71,7 @@ function initSettings( callback ) {
     var settings = new Settings( 'photoset', '0', defaultSettings, function() {
         settings.set( 'plugin.version', npmPackage.version );
         settings.set( 'ipw.version', defaultSettings.ipw.version );
+        settings.set( 'photoset.uploads', defaultSettings.photoset.uploads );
         if( !settings.get( 'photoset.hmac.key' ) )
         {
             var hmacKey = require( 'crypto' ).randomBytes( 64 ).toString( 'hex' );

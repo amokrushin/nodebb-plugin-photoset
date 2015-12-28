@@ -34,6 +34,7 @@
     "gm": "^1.21.1",
     "jsonwebtoken": "^5.4.1",
     "lodash": "^3.10.1",
+    "mime-types": "^2.1.8",
     "moment": "^2.10.6",
     "multiparty": "^4.1.2"
   },
