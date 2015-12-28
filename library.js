@@ -152,7 +152,7 @@ Plugin.updateStatus = function( modules, callback ) {
         Plugin.status.gcs.connection = false;
         Plugin.status.gcs.message = '';
 
-        if( !settings.projectId || !settings.credentials.clientEmail || settings.credentials.privateKey )
+        if( !settings.projectId || !settings.credentials.clientEmail || !settings.credentials.privateKey )
         {
             Plugin.status.gcs.message = 'Not configured';
             return callback();
@@ -193,7 +193,7 @@ Plugin.updateStatus = function( modules, callback ) {
         Plugin.status.rmq.success = false;
         Plugin.status.rmq.message = '';
 
-        if( !settings.host || !settings.user || settings.password )
+        if( !settings.host || !settings.user || !settings.password )
         {
             Plugin.status.rmq.message = 'Not configured';
             return callback();
