@@ -130,44 +130,6 @@ Plugin.addAdminNavigation = function( header, callback ) {
     callback( null, header );
 };
 
-/*
- WebSocket methods
- */
-SocketPlugins.photoset = {};
-
-SocketPlugins.photoset.gcsConnect = function( socket, data, callback ) {
-    user.isAdministrator( socket.uid, function( err, isAdmin ) {
-        if( err || !isAdmin )
-        {
-            winston.warn( '[socket.io] Call to admin method ( plugins.photoset.gcsConnect ) blocked (accessed by uid '
-                + socket.uid + ')' );
-            return callback();
-        }
-
-        var gcs = gcloud.storage( {
-            projectId: data.projectId,
-            credentials: {
-                client_email: data.clientEmail,
-                private_key: data.privateKey
-            }
-        } );
-
-        gcs.getBuckets( function( err, res ) {
-            if( err ) return callback( err );
-
-            var buckets = res.map( function( bucket ) {
-                return {name: bucket.metadata.name};
-            } );
-
-            if( !buckets ) callback( null, false );
-
-            Plugin.settings.set( 'gcs.buckets', buckets );
-            Plugin.settings.persist( function() {
-                callback( null, true );
-            } );
-        } );
-    } );
-};
 
 Plugin.updateStatus = function( modules, callback ) {
     function redisStatus( callback ) {
@@ -348,6 +310,11 @@ Plugin.updateStatus = function( modules, callback ) {
         ], callback ) );
     } );
 };
+
+/*
+ WebSocket methods
+ */
+SocketPlugins.photoset = {};
 
 SocketPlugins.photoset.status = function( socket, module, callback ) {
     Plugin.updateStatus( module, function() {
