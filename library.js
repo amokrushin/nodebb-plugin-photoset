@@ -187,13 +187,24 @@ Plugin.updateStatus = function( modules, callback ) {
     }
 
     function rmqStatus( callback ) {
-        rmq.connect( Plugin.settings.get( 'rmq' ), false, function( err ) {
+        var settings = Plugin.settings.get( 'rmq' ),
+            gcs;
+
+        Plugin.status.rmq.success = false;
+        Plugin.status.rmq.message = '';
+
+        if( !settings.host || !settings.user || settings.password )
+        {
+            Plugin.status.rmq.message = 'Not configured';
+            return callback();
+        }
+
+        rmq.connect( settings, false, function( err ) {
             if( err )
             {
-                Plugin.status.rmq = {success: false, message: err.message};
                 return callback();
             }
-            Plugin.status.rmq = {success: true};
+            Plugin.status.rmq.success = true;
             callback();
         } );
     }
