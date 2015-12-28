@@ -184,16 +184,26 @@ Plugin.updateStatus = function( modules, callback ) {
 
     function gcsStatus( callback ) {
         var settings = Plugin.settings.get( 'gcs' ),
-            gcs = gcloud.storage( {
-                projectId: settings.projectId,
-                credentials: {
-                    client_email: settings.credentials.clientEmail,
-                    private_key: settings.credentials.privateKey
-                }
-            } );
+            gcs;
+
         Plugin.status.gcs.success = false;
         Plugin.status.gcs.connection = false;
         Plugin.status.gcs.message = '';
+
+        if( !settings.projectId || !settings.credentials.clientEmail || settings.credentials.privateKey )
+        {
+            Plugin.status.gcs.message = 'Not configured';
+            return callback();
+        }
+
+        gcs = gcloud.storage( {
+            projectId: settings.projectId,
+            credentials: {
+                client_email: settings.credentials.clientEmail,
+                private_key: settings.credentials.privateKey
+            }
+        } );
+
         // todo: projectId not verified
         gcs.bucket( Date.now().toString() ).getMetadata( function( err ) {
             if( err && err.code === 404 )
