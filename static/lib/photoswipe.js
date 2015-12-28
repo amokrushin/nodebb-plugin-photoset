@@ -14,9 +14,10 @@
                     $photoswipeContainers = $post.find( '.photoset-grid' );
 
                 $post.find( '.photoset-grid' ).removeClass( 'hidden' ).justifiedGallery( {
-                    rowHeight: 160,
-                    fixedHeight: true,
-                    lastRow: 'justify',
+                    rowHeight: 250,
+                    maxRowHeight: '200%',
+                    //fixedHeight: true,
+                    lastRow: 'nojustify',
                     margins: 4,
                     waitThumbnailsLoad: true,
                     captions: true,
