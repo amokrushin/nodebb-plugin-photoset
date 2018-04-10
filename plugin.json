@@ -16,8 +16,8 @@
       "method": "parse"
     },
     {
-      "hook": "filter:post.save",
-      "method": "postSave"
+      "hook": "filter:post.create",
+      "method": "postCreate"
     },
     {
       "hook": "filter:post.edit",

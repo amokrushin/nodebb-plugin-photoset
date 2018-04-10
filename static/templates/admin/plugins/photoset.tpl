@@ -7,18 +7,6 @@
                 <div class="row">
                     <div class="col-sm-8">
                     <span class="lead">
-                    <!-- IF status.redis.success -->
-                    <i class="fa fa-fw fa-check text-success"></i>
-                    <!-- ELSE -->
-                    <i class="fa fa-fw fa-times text-danger"></i>
-                    <!-- ENDIF status.redis.success -->
-                        Redis
-                    </span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-8">
-                    <span class="lead">
                     <!-- IF status.gcs.success -->
                     <i class="fa fa-fw fa-check text-success"></i>
                     <!-- ELSE -->
