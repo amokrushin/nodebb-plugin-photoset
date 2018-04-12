@@ -24,14 +24,13 @@
             })
             .on('action:composer.preview', function () {
                 photoswipe.preview($('.composer-container .preview'));
+            })
+            .on('action:topic.loaded', function () {
+                if ($('.pswp').length) return;
+                templates.parse('photoswipe', {}, function (html) {
+                    $('body').append(html);
+                });
             });
-    });
-
-    $(window).on('action:ajaxify.contentLoaded', function (event, data) {
-        if (data.tpl !== 'topic' || $('.pswp').length) return;
-        templates.parse('photoswipe', {}, function (html) {
-            $('body').append(html);
-        });
     });
 }());
 
