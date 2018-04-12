@@ -66,7 +66,6 @@ var framework = {
 		return el.className && new RegExp('(^|\\s)' + className + '(\\s|$)').test(el.className);
 	},
 	getChildByClass: function(parentEl, childClassName) {
-		console.log('getChildByClass',parentEl, childClassName);
 		var node = parentEl.firstChild;
 		while(node) {
 			if( framework.hasClass(node, childClassName) ) {
