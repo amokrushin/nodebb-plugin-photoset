@@ -3,7 +3,7 @@
 /* globals define, require, $, app, socket, config, ajaxify, RELATIVE_PATH, utils */
 
 (function () {
-    require(['photoswipe-loader', 'forum/topic/posts'], function (photoswipe, Posts) {
+    require(['photoswipe-loader', 'forum/topic/posts', 'benchpress'], function (photoswipe, Posts, templates) {
         /* Disable default wrapping the images in links */
         Posts.wrapImagesInLinks = function () {};
 
