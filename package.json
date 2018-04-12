@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-photoset",
-  "version": "0.4.0-alpha.1",
+  "version": "0.4.0",
   "description": "NodeBB plugin",
   "main": "library.js",
   "repository": {
