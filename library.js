@@ -1,12 +1,12 @@
-const gcloud = require('gcloud');
+const Storage = require('@google-cloud/storage');
 const crypto = require('crypto');
 const async = require('async');
 const winston = require('winston');
 const request = require('request');
-const _ = require('lodash');
+const { forEach, indexBy, remove } = require('lodash');
 const controllers = require('./lib/controllers');
 const middlewares = require('./lib/middlewares');
-const npmPackage = require('./package.json');
+const packageJson = require('./package.json');
 
 const SocketPlugins = require.main.require('./src/socket.io/plugins');
 const db = require.main.require('./src/database');
@@ -68,7 +68,7 @@ function initSettings(callback) {
 
     // note: nodebb settings module breaks arrays after version change, so settings version is not used
     const settings = new Settings('photoset', '0', defaultSettings, () => {
-        settings.set('plugin.version', npmPackage.version);
+        settings.set('plugin.version', packageJson.version);
         settings.set('ipw.version', defaultSettings.ipw.version);
         settings.set('photoset.uploads', defaultSettings.photoset.uploads);
         if (!settings.get('photoset.hmac.key')) {
@@ -92,7 +92,6 @@ Plugin.init = function init(params, callback) {
     router.get('/api/plugins/photoset/settings', middlewares.apiKey, controllers.ipwSettings);
 
     router.get('/static/*', controllers.download);
-
 
     /* override default nodebb uploads route */
     router.post('/api/post/upload', hostMiddleware.applyCSRF, controllers.upload);
@@ -181,14 +180,14 @@ SocketPlugins.photoset.apiKeyNew = (socket, data, callback) => {
 
 SocketPlugins.photoset.apiKeyRemove = (socket, apiKey, callback) => {
     const apiKeys = Plugin.settings.get('irw.apiKeys') || [];
-    _.remove(apiKeys, item => !item || item === apiKey);
+    remove(apiKeys, item => !item || item === apiKey);
     Plugin.settings.set('irw.apiKeys', apiKeys);
     Plugin.settings.persist(callback);
 };
 
 SocketPlugins.photoset.gcsBuckets = (socket, data, callback) => {
     const settings = Plugin.settings.get('gcs');
-    const gcs = gcloud.storage({
+    const gcs = new Storage({
         projectId: settings.projectId,
         credentials: {
             client_email: settings.credentials.clientEmail,
@@ -215,7 +214,7 @@ function gcsStatus(callback) {
         return callback();
     }
 
-    const gcs = gcloud.storage({
+    const gcs = new Storage({
         projectId: settings.projectId,
         credentials: {
             client_email: settings.credentials.clientEmail,
@@ -280,11 +279,11 @@ function ipwStatus(callback) {
     }
 
     ipw.discovery((err, data) => {
-        const activeWorkers = _.indexBy(data, 'uuid');
-        const storedWorkers = _.indexBy(Plugin.status.ipw.workers, 'uuid');
-        const workers = _.assign({}, storedWorkers, activeWorkers);
+        const activeWorkers = indexBy(data, 'uuid');
+        const storedWorkers = indexBy(Plugin.status.ipw.workers, 'uuid');
+        const workers = Object.assign({}, storedWorkers, activeWorkers);
 
-        _.forEach(activeWorkers, (worker) => {
+        forEach(activeWorkers, (worker) => {
             worker.status = 'active';
             if (worker.version !== Plugin.settings.get('ipw.version')) {
                 worker.status = 'updating';
@@ -293,7 +292,7 @@ function ipwStatus(callback) {
             }
         });
 
-        _.forEach(storedWorkers, (worker) => {
+        forEach(storedWorkers, (worker) => {
             if (worker.status === 'active') worker.status = 'inactive';
             if (worker.updateStartedAt) {
                 if (Date.now() > worker.updateStartedAt + (2 * 60 * 1000)) {
@@ -302,11 +301,11 @@ function ipwStatus(callback) {
             }
         });
 
-        _.forEach(workers, (worker) => {
+        forEach(workers, (worker) => {
             if (worker.status === 'updating') Plugin.status.ipw.updateInProgress = true;
         });
 
-        Plugin.status.ipw.workers = _.sortByOrder(_.values(workers), ['startedAt'], ['desc']);
+        Plugin.status.ipw.workers = Object.values(workers).sort((a, b) => a.startedAt - b.startedAt);
         Plugin.status.ipw.success = !!Plugin.status.ipw.workers.length;
 
         if (Plugin.status.ipw.updateRequired) triggerWorkersUpdate();
