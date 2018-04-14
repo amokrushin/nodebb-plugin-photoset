@@ -60,9 +60,9 @@ ajv@^5.1.0:
     fast-json-stable-stringify "^2.0.0"
     json-schema-traverse "^0.3.0"
 
-"am-rmq@git+https://github.com/amokrushin/am-rmq.git":
+am-rmq@^0.2.0:
   version "0.2.0"
-  resolved "git+https://github.com/amokrushin/am-rmq.git#7c89e8b51d08d7af9a861e985781f5e0fc31970d"
+  resolved "https://registry.yarnpkg.com/am-rmq/-/am-rmq-0.2.0.tgz#5f31a2c2274aacabcb77ad2a6a292b726288928b"
   dependencies:
     amqplib "^0.4.0"
     backoff "^2.4.1"
