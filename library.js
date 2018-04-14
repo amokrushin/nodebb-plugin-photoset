@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const async = require('async');
 const winston = require('winston');
 const request = require('request');
-const { forEach, indexBy, remove } = require('lodash');
+const { forEach, keyBy, remove } = require('lodash');
 const controllers = require('./lib/controllers');
 const middlewares = require('./lib/middlewares');
 const packageJson = require('./package.json');
@@ -279,8 +279,8 @@ function ipwStatus(callback) {
     }
 
     ipw.discovery((err, data) => {
-        const activeWorkers = indexBy(data, 'uuid');
-        const storedWorkers = indexBy(Plugin.status.ipw.workers, 'uuid');
+        const activeWorkers = keyBy(data, 'uuid');
+        const storedWorkers = keyBy(Plugin.status.ipw.workers, 'uuid');
         const workers = Object.assign({}, storedWorkers, activeWorkers);
 
         forEach(activeWorkers, (worker) => {
